@@ -19,6 +19,10 @@ def qrun(*commands):
 
 def initialize_ticker(profile=my_profile): #runs at the start of each tick to get values for everything
 
+    #INITIALIZE EQUITY_ARRAY
+    if len(equity_array) == 0:
+        initialize_equity()
+    
     #MY_CASH
     match = re.search('MY_CASH_OUT (\d+)', run("CounterLogic_EMY", "yubodoxical", "MY_CASH") )
     my_profile.money = float(match.group(1))
