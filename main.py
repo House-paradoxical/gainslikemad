@@ -5,16 +5,13 @@ import re
 
 my_profile = Profile()
 # AAPL=1, ATVI=2, EA=3, FB=4, GOOG=5, MSFT=6, SBUX=7, SNY=8, TSLA=9, TWTR=10
-equity_array = [Equity("AAPL"),
-                Equity("ATVI"),
-                Equity("EA"),
-                Equity("FB"),
-                Equity("GOOG"),
-                Equity("MSFT"),
-                Equity("XOM"),
-                Equity("SNY"),
-                Equity("TSLA"),
-                Equity("TWTR")]
+equity_array = []
+
+def initialize_equity():
+    #CURRENT EQUITIES
+    match  = re.findall('(\w+) \d+', qrun("MY_SECURITIES") )
+    for equity_name in match:
+        equity_array.append(Equity(equity_name))
 
 def qrun(*commands):
     ret = run("CounterLogic_EMY", "yubodoxical", *commands)
