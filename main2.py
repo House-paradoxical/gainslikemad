@@ -138,7 +138,7 @@ def initialize_ticker(profile=my_profile): #runs at the start of each tick to ge
             if float(tuple[0]) > equity.maxbid:
                 equity.maxlot = float(tuple[1])
                 equity.maxbid = float(tuple[0])
-        #equity.bidavg = equity.bidavg/equity.bidlot
+        equity.bidavg = equity.bidavg/(equity.bidlot+1)
 
         equity.askavg = 0
         equity.asklot = 0
@@ -151,7 +151,7 @@ def initialize_ticker(profile=my_profile): #runs at the start of each tick to ge
             if float(tuple[0]) < equity.minask:
                 equity.minlot = float(tuple[1])
                 equity.minask = float(tuple[0])
-        #equity.askavg = equity.askavg/equity.asklot
+        equity.askavg = equity.askavg/(equity.asklot+1)
         
         if(equity.my_owned > 0):
             if (equity.dividend_ratio / equity.my_dividend_ratio + 0.001) > 1.5:
