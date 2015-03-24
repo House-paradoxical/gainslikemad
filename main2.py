@@ -19,24 +19,20 @@ def qrun(*commands):
     return ret
 
 def highfrequency(equity):
-    if (equity.minask - equity.maxbid) < 4:
+    if (equity.minask - equity.maxbid) < equity.minask / 30:
         trade(equity, "BID")
         trade(equity, "ASK")
 
 def trade(equity, ordertype):
     if ordertype == "ASK" :
-        print equity.maxbid-0.001
-        print equity.my_owned
-        qrun("ASK " + str(equity.name) + " " + str(equity.maxbid-0.001) + " " +str(int(equity.my_owned)))
+        qrun("ASK " + str(equity.name) + " " + str(equity.minask-0.001) + " " +str(int(equity.my_owned)))
     if ordertype == "BID" :
         shares = 0
         if my_profile.money < 250: # my_profile.net_worth()/4:
             shares = int(my_profile.money / equity.minask)
-            print shares
         else:
-            shares = int(my_profile.money / 4 / equity.minask)
-            print shares
-        qrun("BID " +equity.name + " " + str(equity.minask+0.001) + " " +str(int(shares)))
+            shares = int(my_profile.money / 10 / equity.minask)
+        qrun("BID " +equity.name + " " + str(equity.maxbid+0.001) + " " +str(int(shares)))
     
 def initialize_ticker(profile=my_profile): #runs at the start of each tick to get values for everything
 
@@ -58,11 +54,16 @@ def initialize_ticker(profile=my_profile): #runs at the start of each tick to ge
     #MY_CASH
     match = re.search('(\S+)', output_string[1] )
     my_profile.money = float(match.group(1))
+    if my_profile.starting_money == -1:
+        my_profile.starting_money = my_profile.money
+        
 
     #MY_SECURITIES
     for equity in equity_array:
         match = re.search(equity.name + ' (\S+)', output_string[2])
         equity.my_owned = float(match.group(1))
+        if equity.my_owned == 0:
+            start_time = 0
         match = re.search(equity.name + ' \S+ (\S+)', output_string[2])
         equity.my_dividend_ratio = float(match.group(1))
 
@@ -139,7 +140,7 @@ def initialize_ticker(profile=my_profile): #runs at the start of each tick to ge
             if float(tuple[0]) > equity.maxbid:
                 equity.maxlot = float(tuple[1])
                 equity.maxbid = float(tuple[0])
-        #equity.bidavg = equity.bidavg/equity.bidlot
+        equity.bidavg = equity.bidavg/(equity.bidlot+1)
 
         equity.askavg = 0
         equity.asklot = 0
@@ -152,44 +153,33 @@ def initialize_ticker(profile=my_profile): #runs at the start of each tick to ge
             if float(tuple[0]) < equity.minask:
                 equity.minlot = float(tuple[1])
                 equity.minask = float(tuple[0])
-        #equity.askavg = equity.askavg/equity.asklot
+        equity.askavg = equity.askavg/(equity.asklot+1)
         
-        if(equity.my_owned>0):
-            if (equity.dividend_ratio / equity.my_dividend_ratio + 0.001) > 1.5:
-                trade(equity, "ASK")
-       
-        highfrequency(equity)
-        '''
+        if my_profile.money > my_profile.starting_money / 2:
+           if (equity.minask - equity.maxbid) < float(equity.minask)/20:
+               qrun("BID " + str(equity.name) + " " + str(equity.minask) + " " + str(int(my_profile.money / 2 / equity.minask)))
+            #else:
+            #    italy = (equity.maxbid - equity.minask)/2 + equity.minask
+             #   qrun("BID " + str(equity.name) + " " + str(italy) + " " + str(int(float(my_profile.money) / float(italy)) ))
         if(equity.my_owned > 0):
-            if (equity.dividend_ratio / equity.my_dividend_ratio + 0.001) > 1.5:
-                if(equity.dividend_ratio / equity.my_dividend_ratio) > 10:
-                    print equity.my_owned
-                    qrun("ASK " + str(equity.name) + " " + str(equity.minask) + " " +str(int(equity.my_owned)))
+            print equity.dividend_ratio * 100
+            print equity.my_dividend_ratio * 100
+            if (equity.dividend_ratio / equity.my_dividend_ratio + 0.001) > 1.1:
+                if(equity.dividend_ratio / equity.my_dividend_ratio) > 1.3:
+                    qrun("ASK " + str(equity.name) + " " + str(equity.maxbid) + " " +str(int(equity.my_owned)))
                 else:
                     trade(equity, "ASK")
             else:
                 highfrequency(equity)
-        else:
-            highfrequency(equity)'''
-            
+        
+        highfrequency(equity)
+                
 def main():
     try:
         while True:
+            print my_profile.money
             initialize_ticker()
     finally:
-        print "                         /´¯/)"
-        print "                        /    /"
-        print "                       /   // "
-        print "                      /   / / "
-        print "                     /   / /  "
-        print "          /´¯/'¯¯'/' ·¸ / /¯¯¯\ "
-        print "         /' /    /     /    /  \ "
-        print "        ('(...´(..´......,~/'..') "
-        print "         \.................\/..../ "
-        print "          ''...\.......... _.·´ "
-        print "            \..............( "
-        print "              \.............\ "
-
         main()
                 
 if __name__ == "__main__":

@@ -1,9 +1,10 @@
 import sys
 
 class Profile:
-    def __init__(self, starting_money=1000):
-        self.money = starting_money
-
+    def __init__(self):
+        self.money = 0
+        self.starting_money = -1
+        
 class Equity:
     def __init__(self, name=""):
         self.name = name
@@ -22,3 +23,7 @@ class Equity:
         self.asks_shares = 0
 
         self.time = 0
+        self.askavg = 0
+        self.asklot = 0
+        self.minlot = 0
+        self.minask = float("inf")
