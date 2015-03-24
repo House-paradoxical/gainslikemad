@@ -54,22 +54,15 @@ def initialize_ticker(profile=my_profile): #runs at the start of each tick to ge
     #MY_CASH
     match = re.search('(\S+)', output_string[1] )
     my_profile.money = float(match.group(1))
-<<<<<<< HEAD
     if my_profile.starting_money == -1:
         my_profile.starting_money = my_profile.money
-        
-=======
->>>>>>> origin/master
 
     #MY_SECURITIES
     for equity in equity_array:
         match = re.search(equity.name + ' (\S+)', output_string[2])
         equity.my_owned = float(match.group(1))
-<<<<<<< HEAD
         if equity.my_owned == 0:
             start_time = 0
-=======
->>>>>>> origin/master
         match = re.search(equity.name + ' \S+ (\S+)', output_string[2])
         equity.my_dividend_ratio = float(match.group(1))
 
@@ -160,8 +153,7 @@ def initialize_ticker(profile=my_profile): #runs at the start of each tick to ge
                 equity.minlot = float(tuple[1])
                 equity.minask = float(tuple[0])
         equity.askavg = equity.askavg/(equity.asklot+1)
-        
-<<<<<<< HEAD
+
         if my_profile.money > my_profile.starting_money / 2:
            if (equity.minask - equity.maxbid) < float(equity.minask)/20:
                qrun("BID " + str(equity.name) + " " + str(equity.minask) + " " + str(int(my_profile.money / 2 / equity.minask)))
